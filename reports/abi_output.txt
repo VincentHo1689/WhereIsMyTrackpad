@@ -1,0 +1,26 @@
+[abi] start
+MTDeviceCreateList count=2
+
+[0] ref=0x1043f9d00  service(1arg)=0xb23 (2arg out)=0x0 status=2851
+    GetFamilyID ret=-536870206 out=176
+    IsBuiltIn=1 IsAlive=0 IsMTHID=0 IsOpaque=0
+    -- IOKit properties of service --
+      Family ID        176
+      Product          <none>
+      Transport        SPI
+      Sensor Rows      2
+      Sensor Columns   60
+      DeviceUsagePage  <none>
+      DeviceUsage      <none>
+
+[1] ref=0xa3f04c000  service(1arg)=0x2803 (2arg out)=0x0 status=10243
+    GetFamilyID ret=-536870206 out=113
+    IsBuiltIn=1 IsAlive=0 IsMTHID=1 IsOpaque=0
+    -- IOKit properties of service --
+      Family ID        113
+      Product          Apple Internal Keyboard / Trackpad
+      Transport        FIFO
+      Sensor Rows      18
+      Sensor Columns   26
+      DeviceUsagePage  <none>
+      DeviceUsage      <none>

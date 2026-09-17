@@ -1,0 +1,70 @@
+#!/bin/bash
+# icsmt - small management CLI for ICanSeeMyTrackpadNow.
+#
+#   icsmt doctor                 show environment + run the acceptance checks
+#   icsmt list                   list installed apps that can be launched
+#   icsmt run <App.app|name>     launch an app with the patch injected
+#   icsmt prepare [--copy] <app> re-sign an app so injection is allowed
+#   icsmt global-on              enable system-wide injection (launchctl)
+#   icsmt global-off             disable system-wide injection
+set -uo pipefail
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DYLIB="$HERE/libICanSeeMyTrackpadNow.dylib"
+[ -f "$DYLIB" ] || DYLIB="$HERE/../build/libICanSeeMyTrackpadNow.dylib"
+RUNNER="$HERE/run-with-patch.sh"
+[ -x "$RUNNER" ] || RUNNER="$HERE/../scripts/run-with-patch.sh"
+VERIFY="$HERE/../build/verify"
+
+find_app() {
+  local q="$1"
+  [ -d "$q" ] && { echo "$q"; return; }
+  q="${q%.app}"
+  for d in /Applications "$HOME/Applications" /System/Applications; do
+    [ -d "$d/$q.app" ] && { echo "$d/$q.app"; return; }
+  done
+  echo ""
+}
+
+cmd="${1:-}"; shift || true
+case "$cmd" in
+  doctor)
+    echo "dylib     : $DYLIB"
+    [ -f "$DYLIB" ] && echo "            (present)" || echo "            (MISSING - run install.sh)"
+    echo "sip       : $(csrutil status 2>/dev/null | sed 's/.*: //')"
+    echo "global env: $(launchctl getenv DYLD_INSERT_LIBRARIES 2>/dev/null || echo '(unset)')"
+    if [ -x "$VERIFY" ]; then
+      echo
+      echo "== acceptance checks with patch =="
+      DYLD_INSERT_LIBRARIES="$DYLIB" "$VERIFY"
+    else
+      echo "(build the project to run acceptance checks)"
+    fi
+    ;;
+  list)
+    for d in /Applications "$HOME/Applications"; do
+      [ -d "$d" ] || continue
+      ls -1 "$d" | grep -i '\.app$' | sed 's/\.app$//' | sed "s|^|$d/|"
+    done
+    ;;
+  prepare)
+    exec "$HERE/prepare-app.sh" "$@"
+    ;;
+  run)
+    app="$(find_app "${1:-}")"
+    [ -n "$app" ] || { echo "app not found: ${1:-}" >&2; exit 2; }
+    exec "$RUNNER" "$app" "${@:2}"
+    ;;
+  global-on)
+    launchctl setenv DYLD_INSERT_LIBRARIES "$DYLIB"
+    echo "Global injection enabled ($DYLIB). Restart target apps."
+    ;;
+  global-off)
+    launchctl unsetenv DYLD_INSERT_LIBRARIES
+    echo "Global injection disabled."
+    ;;
+  *)
+    sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'
+    exit 1
+    ;;
+esac

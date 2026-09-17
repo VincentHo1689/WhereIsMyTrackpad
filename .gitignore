@@ -1,0 +1,9 @@
+# Build artifacts
+build/
+*.dylib
+*.o
+__pycache__/
+
+# Local logs / backups
+*.log
+.DS_Store
