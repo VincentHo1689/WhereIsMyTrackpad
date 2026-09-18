@@ -1,4 +1,4 @@
-// verify.c - acceptance checks for ICanSeeMyTrackpadNow.
+// verify.c - acceptance checks for WhereIsMyTrackpad.
 // Exit 0 = all checks passed.
 #include <dlfcn.h>
 #include <stdio.h>
@@ -20,14 +20,14 @@ int main(void){setvbuf(stdout,NULL,_IONBF,0);
   typedef void(*s_t)(MTDeviceRef,int); s_t S=(s_t)dlsym(h,"MTDeviceStart");
   typedef bool(*r_t)(MTDeviceRef); r_t RUN=(r_t)dlsym(h,"MTDeviceIsRunning");
   char buf[128];
-  printf("ICanSeeMyTrackpadNow - acceptance checks\n");
+  printf("WhereIsMyTrackpad - acceptance checks\n");
 
   MTDeviceRef d=cd(); int df=-1; fam(d,&df);
   int is_tp = (df==108 || df==113);
   snprintf(buf,sizeof buf,"MTDeviceCreateDefault family=%d",df);
   chk("default device is the built-in trackpad", is_tp, buf);
   chk("trackpad family is app-recognizable (108, not 113)",
-      df==108 || getenv("ICSMT_KEEP_FAMILY"), buf);
+      df==108 || getenv("WIMT_KEEP_FAMILY"), buf);
   int running = -1;
   if(is_tp){ S(d,0); running=RUN?RUN(d):-1; snprintf(buf,sizeof buf,"running=%d",running);
     chk("default device starts", running==1, buf); }

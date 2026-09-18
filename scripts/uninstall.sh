@@ -2,8 +2,8 @@
 # uninstall.sh - remove the patch and restore original behavior.
 set -euo pipefail
 
-DEST="$HOME/Library/Application Support/ICanSeeMyTrackpadNow"
-DYLIB="$DEST/libICanSeeMyTrackpadNow.dylib"
+DEST="$HOME/Library/Application Support/WhereIsMyTrackpad"
+DYLIB="$DEST/libWhereIsMyTrackpad.dylib"
 BINDIR="$HOME/.local/bin"
 
 # Only clear the global variable if it points at our dylib.
@@ -20,7 +20,7 @@ if [ -f "$DEST/injected-apps.txt" ]; then
   done < "$DEST/injected-apps.txt"
 fi
 
-if [ -L "$BINDIR/icsmt" ]; then rm -f "$BINDIR/icsmt"; fi
+if [ -L "$BINDIR/wimt" ]; then rm -f "$BINDIR/wimt"; fi
 
 if [ -d "$DEST" ]; then
   rm -rf "$DEST"

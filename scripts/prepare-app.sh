@@ -17,7 +17,7 @@
 #   prepare-app.sh --restore /Applications/LaunchNext.app  # undo
 set -euo pipefail
 
-DEST="$HOME/Library/Application Support/ICanSeeMyTrackpadNow"
+DEST="$HOME/Library/Application Support/WhereIsMyTrackpad"
 BACKUP_DIR="$DEST/backups"
 APPS_DIR="$DEST/Apps"
 
@@ -60,7 +60,7 @@ else
   TARGET="$APP"
 fi
 
-WORK="$(mktemp -t icsmt_ent).plist"
+WORK="$(mktemp -t wimt_ent).plist"
 codesign -d --entitlements :- "$TARGET" > "$WORK" 2>/dev/null || true
 if ! /usr/libexec/PlistBuddy -c "Print" "$WORK" >/dev/null 2>&1; then
   printf '%s\n' '<?xml version="1.0" encoding="UTF-8"?>' \

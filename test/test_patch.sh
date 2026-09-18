@@ -5,7 +5,7 @@ set -uo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 ROOT="$PWD"
-DYLIB="$ROOT/build/libICanSeeMyTrackpadNow.dylib"
+DYLIB="$ROOT/build/libWhereIsMyTrackpad.dylib"
 
 echo "== Building =="
 "$ROOT/build.sh" || { echo "build failed"; exit 2; }

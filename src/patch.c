@@ -1,4 +1,4 @@
-// patch.c - ICanSeeMyTrackpadNow
+// patch.c - WhereIsMyTrackpad
 //
 // Interposes three symbols in MultitouchSupport.framework so apps that ask for
 // "the" multitouch device receive the built-in trackpad instead of the Touch Bar,
@@ -38,7 +38,7 @@
 // Some apps classify family 113 as "Magic Mouse" rather than a trackpad (LaunchNext
 // ships OpenMultitouchSupport, whose table maps 112/113 to Magic Mouse), so the
 // built-in trackpad is filtered out even when it is returned first. Report a family
-// those apps treat as a MacBook trackpad instead. ICSMT_KEEP_FAMILY=1 disables.
+// those apps treat as a MacBook trackpad instead. WIMT_KEEP_FAMILY=1 disables.
 #define TRACKPAD_FAMILY_REPORTED 108
 
 typedef void *MTDeviceRef;
@@ -76,25 +76,25 @@ static int resolved;                // 0 = untried, 1 = attempted
 static int debug_on(void) {
     static int v = -1;
     if (v < 0) {
-        const char *e = getenv("ICSMT_DEBUG");
+        const char *e = getenv("WIMT_DEBUG");
         v = (e && *e && *e != '0') ? 1 : 0;
     }
     return v;
 }
 
 // Startup logging. A handful of lines per process, so it is always appended to
-// ~/Library/Logs/ICanSeeMyTrackpadNow.log (useful when the app was launched by
-// Finder/launchd, where stderr is discarded); stderr is only used under ICSMT_DEBUG.
+// ~/Library/Logs/WhereIsMyTrackpad.log (useful when the app was launched by
+// Finder/launchd, where stderr is discarded); stderr is only used under WIMT_DEBUG.
 // honey: single static FILE*, unlocked, fine for a few startup lines; lock or rotate
 // if call volume ever grows.
-static void icsmt_log(const char *fmt, ...) {
+static void wimt_log(const char *fmt, ...) {
     char line[1024];
     va_list ap;
     va_start(ap, fmt);
     vsnprintf(line, sizeof line, fmt, ap);
     va_end(ap);
 
-    if (debug_on()) fprintf(stderr, "[ICanSeeMyTrackpadNow] %s\n", line);
+    if (debug_on()) fprintf(stderr, "[WhereIsMyTrackpad] %s\n", line);
 
     static FILE *f;
     static int tried;
@@ -105,13 +105,13 @@ static void icsmt_log(const char *fmt, ...) {
             char dir[1024], path[1024];
             snprintf(dir, sizeof dir, "%s/Library/Logs", home);
             mkdir(dir, 0755);
-            snprintf(path, sizeof path, "%s/ICanSeeMyTrackpadNow.log", dir);
+            snprintf(path, sizeof path, "%s/WhereIsMyTrackpad.log", dir);
             f = fopen(path, "a");
         }
     }
     if (f) { fprintf(f, "[%d] %s\n", (int)getpid(), line); fflush(f); }
 }
-#define LOG(...) icsmt_log(__VA_ARGS__)
+#define LOG(...) wimt_log(__VA_ARGS__)
 
 static void resolve_helpers(void) {
     if (sym_getService && sym_createFromService && sym_isBuiltIn) return;
@@ -169,7 +169,7 @@ static int family_of(MTDeviceRef d) {
 static int keep_family(void) {
     static int v = -1;
     if (v < 0) {
-        const char *e = getenv("ICSMT_KEEP_FAMILY");
+        const char *e = getenv("WIMT_KEEP_FAMILY");
         v = (e && *e && *e != '0') ? 1 : 0;
     }
     return v;
@@ -324,7 +324,7 @@ __attribute__((used)) static struct { const void *replacement; const void *repla
     interpose_start __attribute__((section("__DATA,__interpose"))) =
         { (const void *)my_start, (const void *)MTDeviceStart };
 
-__attribute__((constructor)) static void icsmt_init(void) {
+__attribute__((constructor)) static void wimt_init(void) {
     LOG("loaded (createList=%p createDefault=%p getFamily=%p)",
         (void *)orig_createList, (void *)orig_createDefault, (void *)orig_getFamily);
 }

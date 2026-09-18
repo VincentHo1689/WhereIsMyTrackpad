@@ -1,4 +1,4 @@
-# ICanSeeMyTrackpadNow — Technical Report
+# WhereIsMyTrackpad — Technical Report
 
 ## 1. Environment
 
@@ -100,10 +100,10 @@ Determined from `dyld_info -exports` on the shared-cache-only framework binary
 - `my_getFamily()` remaps the built-in trackpad's raw family 113 to 108 (the
   "MacBook trackpad" family) so apps that only classify known trackpad families
   accept it. External devices (when `MTDeviceIsBuiltIn()` is false) and family 176
-  are left untouched; `ICSMT_KEEP_FAMILY=1` disables the remap.
+  are left untouched; `WIMT_KEEP_FAMILY=1` disables the remap.
 - Pass-through interposers for `MTRegisterContactFrameCallback` and `MTDeviceStart`
   log which device an app actually starts (debug only; behaviour unchanged).
-- Debug logging is gated behind `ICSMT_DEBUG=1`.
+- Debug logging is gated behind `WIMT_DEBUG=1`.
 
 ## 7. Verification
 
@@ -157,21 +157,21 @@ also present. Proof:
 
 ```
 # as-is: no output from the injected dylib
-$ DYLD_INSERT_LIBRARIES=...libICanSeeMyTrackpadNow.dylib .../LaunchNext
+$ DYLD_INSERT_LIBRARIES=...libWhereIsMyTrackpad.dylib .../LaunchNext
 (nothing)
 
 # after re-signing ad-hoc with the two entitlements added:
 $ DYLD_INSERT_LIBRARIES=... .../LaunchNext
-[ICanSeeMyTrackpadNow] loaded (createList=... createDefault=...)
-[ICanSeeMyTrackpadNow] reordered device list (2 entries)
+[WhereIsMyTrackpad] loaded (createList=... createDefault=...)
+[WhereIsMyTrackpad] reordered device list (2 entries)
 ```
 
 Injecting into the real LaunchNext confirms the app-side selection: with gestures
 enabled the hook logs
 
 ```
-[ICanSeeMyTrackpadNow] app registered a contact callback on family=113
-[ICanSeeMyTrackpadNow] app started device family=113
+[WhereIsMyTrackpad] app registered a contact callback on family=113
+[WhereIsMyTrackpad] app started device family=113
 ```
 
 i.e. LaunchNext now binds its contact callback to the **trackpad** rather than the

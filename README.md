@@ -1,4 +1,4 @@
-# ICanSeeMyTrackpadNow
+# WhereIsMyTrackpad
 
 A macOS dylib that fixes apps which see the **Touch Bar** instead of the **built-in
 trackpad** when they use Apple's private `MultitouchSupport.framework`.
@@ -34,7 +34,7 @@ after  patch : MTDeviceCreateDefault family=113   list=[113, 176]
 - `MTDeviceGetFamilyID` — report the built-in trackpad (raw family 113) as family
   **108** ("MacBook trackpad"). Several apps, including LaunchNext, classify 113 as
   a Magic Mouse and therefore refuse to treat it as a trackpad. Set
-  `ICSMT_KEEP_FAMILY=1` to disable just this remap.
+  `WIMT_KEEP_FAMILY=1` to disable just this remap.
 
 The trackpad reference is rebuilt with `MTDeviceCreateFromService()` from an
 IOKit-enumerated `AppleMultitouchDevice` service, because a reference obtained by
@@ -61,7 +61,7 @@ trackpad. Quit LaunchNext before running it.
 ## Build
 
 ```sh
-./build.sh          # produces build/libICanSeeMyTrackpadNow.dylib and test tools
+./build.sh          # produces build/libWhereIsMyTrackpad.dylib and test tools
 ```
 
 ## Install
@@ -71,8 +71,8 @@ trackpad. Quit LaunchNext before running it.
 ./scripts/install.sh --global   # also set DYLD_INSERT_LIBRARIES system-wide (see Limitations)
 ```
 
-This installs into `~/Library/Application Support/ICanSeeMyTrackpadNow/` and puts an
-`icsmt` CLI on `~/.local/bin`.
+This installs into `~/Library/Application Support/WhereIsMyTrackpad/` and puts an
+`wimt` CLI on `~/.local/bin`.
 
 ## Usage
 
@@ -85,13 +85,13 @@ under the hardened runtime. After this, the app is patched with no wrapper and n
 environment variable.
 
 ```sh
-~/Library/Application\ Support/ICanSeeMyTrackpadNow/inject-app.sh /Applications/LaunchNext.app
+~/Library/Application\ Support/WhereIsMyTrackpad/inject-app.sh /Applications/LaunchNext.app
 ```
 
 The original executable and entitlements are backed up; revert any time with:
 
 ```sh
-~/Library/Application\ Support/ICanSeeMyTrackpadNow/inject-app.sh --restore /Applications/LaunchNext.app
+~/Library/Application\ Support/WhereIsMyTrackpad/inject-app.sh --restore /Applications/LaunchNext.app
 ```
 
 Quit the app before patching, then reopen it normally.
@@ -102,9 +102,9 @@ Apps signed with the hardened runtime ignore `DYLD_INSERT_LIBRARIES`, so they mu
 first be made injectable, then launched through the wrapper:
 
 ```sh
-D="~/Library/Application Support/ICanSeeMyTrackpadNow"
+D="~/Library/Application Support/WhereIsMyTrackpad"
 "$D/prepare-app.sh" --copy /Applications/StrokeMouse.app     # patched copy, original untouched
-"$D/run-with-patch.sh" "$D/Apps/StrokeMouse.app"             # or: icsmt run ...
+"$D/run-with-patch.sh" "$D/Apps/StrokeMouse.app"             # or: wimt run ...
 ```
 
 Use `prepare-app.sh --restore` to revert in-place changes.
@@ -125,14 +125,14 @@ To prove contact frames really arrive, run the interactive test and touch the
 trackpad when prompted:
 
 ```sh
-DYLD_INSERT_LIBRARIES="$PWD/build/libICanSeeMyTrackpadNow.dylib" ./build/callback_test 15
+DYLD_INSERT_LIBRARIES="$PWD/build/libWhereIsMyTrackpad.dylib" ./build/callback_test 15
 ```
 
 Expected final line: `RESULT frames=<n> maxFingers=<m>` with `n > 0`.
 
 ## Troubleshooting
 
-The dylib appends a few lines per launch to `~/Library/Logs/ICanSeeMyTrackpadNow.log`,
+The dylib appends a few lines per launch to `~/Library/Logs/WhereIsMyTrackpad.log`,
 including when the app was opened from Finder/Dock. A healthy LaunchNext session ends
 with:
 
@@ -143,7 +143,7 @@ app started device family=113
 
 `family=113` is the trackpad; `176` is the Touch Bar. If the log is empty, the dylib
 is not loading (re-run `inject-app.sh`, or check the app is not SIP-protected). Set
-`ICSMT_DEBUG=1` to also print these lines to stderr. Set `ICSMT_KEEP_FAMILY=1` to
+`WIMT_DEBUG=1` to also print these lines to stderr. Set `WIMT_KEEP_FAMILY=1` to
 disable the family remap.
 
 ### LaunchNext still does nothing with gestures
@@ -152,7 +152,7 @@ LaunchNext has its own gesture settings that are off by default and, on a Touch 
 MacBook, point at the Touch Bar instead of the trackpad:
 
 ```sh
-~/Library/Application\ Support/ICanSeeMyTrackpadNow/fix-launchnext-gestures.sh
+~/Library/Application\ Support/WhereIsMyTrackpad/fix-launchnext-gestures.sh
 ```
 
 Quit LaunchNext first, run it, then reopen LaunchNext.
@@ -161,7 +161,7 @@ Quit LaunchNext first, run it, then reopen LaunchNext.
 
 ```sh
 ./scripts/uninstall.sh                                   # from the clone
-"$HOME/Library/Application Support/ICanSeeMyTrackpadNow/uninstall.sh"   # installed copy
+"$HOME/Library/Application Support/WhereIsMyTrackpad/uninstall.sh"   # installed copy
 ```
 
 This reverts every permanently patched app (`inject-app.sh --restore`) and removes the
@@ -197,6 +197,6 @@ scripts/inject-dylib.py      Mach-O LC_LOAD_DYLIB helper used by inject-app.sh
 scripts/prepare-app.sh       add injection entitlements to an app
 scripts/run-with-patch.sh    launch an app with the patch (wrapper alternative)
 scripts/fix-launchnext-gestures.sh  enable LaunchNext gestures on the trackpad
-scripts/icsmt                management CLI
+scripts/wimt                management CLI
 reports/TECHNICAL_REPORT.md  detailed findings
 ```

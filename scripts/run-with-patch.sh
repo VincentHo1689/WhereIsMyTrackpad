@@ -4,10 +4,10 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DYLIB="$HERE/libICanSeeMyTrackpadNow.dylib"
-[ -f "$DYLIB" ] || DYLIB="$HERE/../build/libICanSeeMyTrackpadNow.dylib"
+DYLIB="$HERE/libWhereIsMyTrackpad.dylib"
+[ -f "$DYLIB" ] || DYLIB="$HERE/../build/libWhereIsMyTrackpad.dylib"
 if [ ! -f "$DYLIB" ]; then
-  echo "error: libICanSeeMyTrackpadNow.dylib not found next to this script" >&2
+  echo "error: libWhereIsMyTrackpad.dylib not found next to this script" >&2
   exit 2
 fi
 

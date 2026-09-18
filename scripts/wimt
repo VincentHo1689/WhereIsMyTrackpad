@@ -1,17 +1,17 @@
 #!/bin/bash
-# icsmt - small management CLI for ICanSeeMyTrackpadNow.
+# wimt - small management CLI for WhereIsMyTrackpad.
 #
-#   icsmt doctor                 show environment + run the acceptance checks
-#   icsmt list                   list installed apps that can be launched
-#   icsmt run <App.app|name>     launch an app with the patch injected
-#   icsmt prepare [--copy] <app> re-sign an app so injection is allowed
-#   icsmt global-on              enable system-wide injection (launchctl)
-#   icsmt global-off             disable system-wide injection
+#   wimt doctor                 show environment + run the acceptance checks
+#   wimt list                   list installed apps that can be launched
+#   wimt run <App.app|name>     launch an app with the patch injected
+#   wimt prepare [--copy] <app> re-sign an app so injection is allowed
+#   wimt global-on              enable system-wide injection (launchctl)
+#   wimt global-off             disable system-wide injection
 set -uo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DYLIB="$HERE/libICanSeeMyTrackpadNow.dylib"
-[ -f "$DYLIB" ] || DYLIB="$HERE/../build/libICanSeeMyTrackpadNow.dylib"
+DYLIB="$HERE/libWhereIsMyTrackpad.dylib"
+[ -f "$DYLIB" ] || DYLIB="$HERE/../build/libWhereIsMyTrackpad.dylib"
 RUNNER="$HERE/run-with-patch.sh"
 [ -x "$RUNNER" ] || RUNNER="$HERE/../scripts/run-with-patch.sh"
 VERIFY="$HERE/../build/verify"

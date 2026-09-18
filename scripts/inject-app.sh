@@ -14,9 +14,9 @@
 #   inject-app.sh --restore /Applications/LaunchNext.app
 set -euo pipefail
 
-DEST="$HOME/Library/Application Support/ICanSeeMyTrackpadNow"
+DEST="$HOME/Library/Application Support/WhereIsMyTrackpad"
 BACKUP_DIR="$DEST/backups"
-DYLIB_NAME="libICanSeeMyTrackpadNow.dylib"
+DYLIB_NAME="libWhereIsMyTrackpad.dylib"
 LOAD_PATH="@executable_path/../Frameworks/$DYLIB_NAME"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INJECTOR="$HERE/inject-dylib.py"
@@ -87,7 +87,7 @@ echo "Adding load command -> $LOAD_PATH"
 codesign --remove-signature "$BIN" 2>/dev/null || true
 python3 "$INJECTOR" add "$BIN" "$LOAD_PATH"
 
-WORK="$(mktemp -t icsmt_ent).plist"
+WORK="$(mktemp -t wimt_ent).plist"
 cp "$ENT_BAK" "$WORK"
 add_key com.apple.security.cs.disable-library-validation true "$WORK"
 add_key com.apple.security.cs.allow-dyld-environment-variables true "$WORK"

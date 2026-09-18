@@ -1,5 +1,5 @@
 #!/bin/bash
-# install.sh - install ICanSeeMyTrackpadNow into the user's home directory.
+# install.sh - install WhereIsMyTrackpad into the user's home directory.
 #
 # Default (safe): per-app injection. Nothing global is changed; you launch apps
 # through the provided wrapper.
@@ -10,8 +10,8 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEST="$HOME/Library/Application Support/ICanSeeMyTrackpadNow"
-DYLIB_NAME="libICanSeeMyTrackpadNow.dylib"
+DEST="$HOME/Library/Application Support/WhereIsMyTrackpad"
+DYLIB_NAME="libWhereIsMyTrackpad.dylib"
 
 GLOBAL=0
 for a in "$@"; do
@@ -34,24 +34,24 @@ codesign -f -s - "$DEST/$DYLIB_NAME"
 
 # Copy the wrapper + CLI alongside the dylib (wrapper expects the dylib next to it).
 cp "$HERE/run-with-patch.sh" "$DEST/run-with-patch.sh"
-cp "$HERE/icsmt" "$DEST/icsmt"
+cp "$HERE/wimt" "$DEST/wimt"
 cp "$HERE/prepare-app.sh" "$DEST/prepare-app.sh"
 cp "$HERE/fix-launchnext-gestures.sh" "$DEST/fix-launchnext-gestures.sh"
 cp "$HERE/inject-app.sh" "$DEST/inject-app.sh"
 cp "$HERE/inject-dylib.py" "$DEST/inject-dylib.py"
 cp "$HERE/uninstall.sh" "$DEST/uninstall.sh"
-chmod +x "$DEST/run-with-patch.sh" "$DEST/icsmt" "$DEST/prepare-app.sh" \
+chmod +x "$DEST/run-with-patch.sh" "$DEST/wimt" "$DEST/prepare-app.sh" \
          "$DEST/fix-launchnext-gestures.sh" "$DEST/inject-app.sh" "$DEST/inject-dylib.py" \
          "$DEST/uninstall.sh"
 
 # Expose the CLI on PATH without sudo where possible.
 BINDIR="$HOME/.local/bin"
 mkdir -p "$BINDIR"
-ln -sf "$DEST/icsmt" "$BINDIR/icsmt"
+ln -sf "$DEST/wimt" "$BINDIR/wimt"
 
 echo
 echo "Installed to: $DEST"
-echo "CLI:          $BINDIR/icsmt  (add $BINDIR to PATH if not already)"
+echo "CLI:          $BINDIR/wimt  (add $BINDIR to PATH if not already)"
 
 if [ "$GLOBAL" -eq 1 ]; then
   echo
@@ -65,7 +65,7 @@ else
   echo
   echo "Per-app usage:"
   echo "  \"$DEST/run-with-patch.sh\" /Applications/LaunchNext.app"
-  echo "  \"$BINDIR/icsmt\" run /Applications/LaunchNext.app"
+  echo "  \"$BINDIR/wimt\" run /Applications/LaunchNext.app"
   echo
   echo "Re-run with --global for system-wide injection (not recommended)."
 fi

@@ -16,10 +16,10 @@ mkdir -p build
 echo "Building dylib..."
 # Universal so the same dylib loads into both Apple Silicon and Intel app slices.
 "${CC[@]}" -dynamiclib -arch arm64 -arch x86_64 \
-  -o build/libICanSeeMyTrackpadNow.dylib src/patch.c \
+  -o build/libWhereIsMyTrackpad.dylib src/patch.c \
   "${FRAMEWORKS[@]}" -undefined dynamic_lookup
 # Apple Silicon requires at least an ad-hoc signature for injection.
-codesign -f -s - build/libICanSeeMyTrackpadNow.dylib
+codesign -f -s - build/libWhereIsMyTrackpad.dylib
 
 echo "Building tools..."
 for t in probe appsim verify callback_test; do

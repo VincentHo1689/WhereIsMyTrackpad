@@ -38,4 +38,4 @@ defaults write "$DOMAIN" gestureDeviceSelectionMode -string automatic
 defaults write "$DOMAIN" gestureSelectedDeviceIDs -array "$ID"
 
 echo "LaunchNext gestures enabled, trackpad ID set to $ID"
-echo "Restart LaunchNext with the patch injected (icsmt run /Applications/LaunchNext.app)."
+echo "Restart LaunchNext with the patch injected (wimt run /Applications/LaunchNext.app)."
